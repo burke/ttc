@@ -13,27 +13,31 @@ struct Opt {
     encoding: String,
 }
 
-fn token_count(content: &str, encoding: &str) -> usize {
-    let bpe = match encoding {
+fn get_encoder(encoding: &str) -> tiktoken_rs::CoreBPE {
+    match encoding {
         "cl100k_base" => tiktoken_rs::cl100k_base().unwrap(),
         "p50k_base" => tiktoken_rs::p50k_base().unwrap(),
         "p50k_edit" => tiktoken_rs::p50k_edit().unwrap(),
         "r50k_base" | "gpt2" => tiktoken_rs::r50k_base().unwrap(),
         _ => panic!("Invalid encoding name"),
-    };
-    let tokens = bpe.encode_with_special_tokens(content);
+    }
+}
+
+fn token_count(content: &str, encoder: &tiktoken_rs::CoreBPE) -> usize {
+    let tokens = encoder.encode_with_special_tokens(content);
     tokens.len()
 }
 
 fn main() -> io::Result<()> {
     let opt = Opt::from_args();
+    let encoder = get_encoder(&opt.encoding);
     let mut total = 0;
     let mut file_count = 0;
 
     if opt.files.is_empty() {
         let mut content = String::new();
         io::stdin().read_to_string(&mut content)?;
-        let count = token_count(&content, &opt.encoding);
+        let count = token_count(&content, &encoder);
         println!("{}", count);
     } else {
         for filename in &opt.files {
@@ -50,7 +54,7 @@ fn main() -> io::Result<()> {
             let mut buf_reader = BufReader::new(file);
             buf_reader.read_to_string(&mut content)?;
 
-            let count = token_count(&content, &opt.encoding);
+            let count = token_count(&content, &encoder);
             println!("{:8} {}", count, filename.display());
             total += count;
             file_count += 1;
