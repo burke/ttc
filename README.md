@@ -15,11 +15,7 @@ $ git ls-files | xargs ttc
 $ ttc < README.md
 185
 ```
+Run `cargo build --release` then copy `target/release/ttc` to your path.
 
-There are two implementations here. `ttc` is a python implementation. You can
-just put it on your path and run `pip3 install tiktoken` or `pip install tiktoken`;
-whichever makes it work.
-
-The other implementation is in rust. Run `cargo build --release` and put
-`target/release/ttc` on your path, or see if there's something on the releases
-page for your platform.
+You can select between encodings (`cl100k_base`, `p50k_base`, `p50k_edit`,
+`r50k_base`) with the `--encoding` flag. The default is `cl100k_base`.
