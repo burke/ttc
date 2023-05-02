@@ -9,7 +9,7 @@ struct Opt {
     #[structopt(name = "FILE", parse(from_os_str))]
     files: Vec<std::path::PathBuf>,
 
-    #[structopt(long, default_value = "cl100k_base", help = "Encoding name for tiktoken (default: cl100k_base)")]
+    #[structopt(short = "e", long, default_value = "cl100k_base", help = "Encoding model (cl100k_base|p50k_base|p50k_edit|r50k_base)")]
     encoding: String,
 }
 
