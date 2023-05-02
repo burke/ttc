@@ -8,12 +8,11 @@ $ git ls-files | xargs ttc
     4902 Cargo.lock
       72 Cargo.toml
      201 LICENSE
-     185 README.md
-     371 src/main.rs
-     284 ttc
-    6017 total
+     157 README.md
+     501 src/main.rs
+    5835 total
 $ ttc < README.md
-185
+157
 ```
 Run `cargo build --release` then copy `target/release/ttc` to your path.
 
