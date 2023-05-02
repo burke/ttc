@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{self, BufReader, Read};
 use std::path::Path;
+use std::process;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -19,7 +20,10 @@ fn get_encoder(encoding: &str) -> tiktoken_rs::CoreBPE {
         "p50k_base" => tiktoken_rs::p50k_base().unwrap(),
         "p50k_edit" => tiktoken_rs::p50k_edit().unwrap(),
         "r50k_base" | "gpt2" => tiktoken_rs::r50k_base().unwrap(),
-        _ => panic!("Invalid encoding name"),
+        _ => {
+            eprintln!("ttc: invalid encoding name");
+            process::exit(1);
+        }
     }
 }
 
@@ -35,8 +39,9 @@ fn main() -> io::Result<()> {
     let mut file_count = 0;
 
     if opt.files.is_empty() {
-        let mut content = String::new();
-        io::stdin().read_to_string(&mut content)?;
+        let mut bytes = Vec::new();
+        io::stdin().read_to_end(&mut bytes)?;
+        let content = String::from_utf8_lossy(&bytes);
         let count = token_count(&content, &encoder);
         println!("{}", count);
     } else {
@@ -44,15 +49,16 @@ fn main() -> io::Result<()> {
             let path = Path::new(&filename);
             let file = match File::open(&path) {
                 Err(why) => {
-                    eprintln!("Error: {}", why);
+                    eprintln!("ttc: {}", why);
                     continue;
                 }
                 Ok(file) => file,
             };
 
-            let mut content = String::new();
             let mut buf_reader = BufReader::new(file);
-            buf_reader.read_to_string(&mut content)?;
+            let mut bytes = Vec::new();
+            buf_reader.read_to_end(&mut bytes)?;
+            let content = String::from_utf8_lossy(&bytes);
 
             let count = token_count(&content, &encoder);
             println!("{:8} {}", count, filename.display());
