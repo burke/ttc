@@ -57,7 +57,13 @@ fn main() -> io::Result<()> {
 
             let mut buf_reader = BufReader::new(file);
             let mut bytes = Vec::new();
-            buf_reader.read_to_end(&mut bytes)?;
+            match buf_reader.read_to_end(&mut bytes) {
+                Err(why) => {
+                    eprintln!("ttc: {}: {}", filename.display(), why);
+                    continue;
+                }
+                Ok(_) => (),
+            };
             let content = String::from_utf8_lossy(&bytes);
 
             let count = token_count(&content, &encoder);
