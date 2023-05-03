@@ -14,7 +14,8 @@ $ git ls-files | xargs ttc
 $ ttc < README.md
 157
 ```
-Run `cargo build --release` then copy `target/release/ttc` to your path.
+Run `cargo build --release` then copy `target/release/ttc` to your path (or just
+`cargo install --git https://github.com/burke/ttc/`).
 
 You can select between encodings (`cl100k_base`, `p50k_base`, `p50k_edit`,
 `r50k_base`) with the `--encoding` flag. The default is `cl100k_base`.
